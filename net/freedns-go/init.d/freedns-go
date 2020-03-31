@@ -1,0 +1,23 @@
+#!/bin/sh /etc/rc.common
+
+START=80
+
+LOGFILE="/tmp/log/freedns-go.log"
+PIDFILE="/tmp/run/freedns-go.pid"
+
+start() {
+    /usr/bin/nohup /usr/bin/freedns-go -f 127.0.0.1:2051 -c 127.0.0.1:2052 -l 127.0.0.1:1053 > ${LOGFILE} 2>&1 &
+    echo -n $! > ${PIDFILE}
+}
+
+stop() {
+    if [ -e ${PIDFILE} ]; then
+        kill $(cat $PIDFILE)
+    fi
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}

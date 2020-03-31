@@ -1,0 +1,36 @@
+#!/bin/sh /etc/rc.common
+# Trusted DNS Service
+
+START=70
+
+LOGFILE="/tmp/log/dnsproxy.trusted.log"
+PIDFILE="/tmp/run/dnsproxy.trusted.pid"
+
+start() {
+    /usr/bin/nohup /usr/bin/dnsproxy \
+        --bootstrap=119.29.29.29 \
+        --upstream=https://dns.adguard.com/dns-query \
+        --upstream=https://cloudflare-dns.com/dns-query \
+        --upstream=https://1.0.0.1/dns-query \
+        --upstream=https://dns.quad9.net/dns-query \
+        --upstream=https://dns9.quad9.net/dns-query \
+        --upstream=https://doh.dns.sb/dns-query \
+        --cache \
+        --cache-size=8192 \
+        --listen=127.0.0.1 \
+        --port 2052 \
+        --all-servers > ${LOGFILE} 2>&1 &
+    echo -n $! > ${PIDFILE}
+}
+
+stop() {
+    if [ -e ${PIDFILE} ]; then
+        kill $(cat $PIDFILE)
+    fi
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}

@@ -1,0 +1,34 @@
+#!/bin/sh /etc/rc.common
+# Local DNS Service
+
+START=70
+
+LOGFILE="/tmp/log/dnsproxy.local.log"
+PIDFILE="/tmp/run/dnsproxy.local.pid"
+
+start() {
+    /usr/bin/nohup /usr/bin/dnsproxy \
+        --upstream=119.29.29.29 \
+        --upstream=223.5.5.5 \
+        --upstream=223.6.6.6 \
+        --upstream=1.2.4.8 \
+        --upstream=https://dns.alidns.com/dns-query \
+        --cache \
+        --cache-size=8192 \
+        --listen=127.0.0.1 \
+        --port 2051 \
+        --all-servers > ${LOGFILE} 2>&1 &
+    echo -n $! > ${PIDFILE}
+}
+
+stop() {
+    if [ -e ${PIDFILE} ]; then
+        kill $(cat $PIDFILE)
+    fi
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}

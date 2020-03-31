@@ -34,6 +34,8 @@ define Package/dnsproxy/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
 	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./init.d/* $(1)/etc/init.d/
 endef
 
 define Package/dnsproxy/description
